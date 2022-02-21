@@ -8,7 +8,12 @@ public class CollegeDto
 	
 	
 	
-	public CollegeDto(int collegeId, String collegeName, int noOfStudents) {
+	
+	public CollegeDto() {
+		//super();
+	}
+	public CollegeDto(int collegeId, String collegeName, int noOfStudents) 
+	{
 		super();
 		this.collegeId = collegeId;
 		this.collegeName = collegeName;

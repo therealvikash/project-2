@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fs.consultingagency.service.ICollegeService;
 import com.fs.consultingagency.vo.College;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import com.fs.consultingagency.controller.CollegeController;
 
 
@@ -21,6 +24,9 @@ public class CollegeController
 {
 	Logger logger = LoggerFactory.getLogger(CollegeController.class);
 	
+	public static final String UNIVERSITY_SERVICE_BY_REST_TEMPLATE = "getAllCollegeFallbackByRestTemplate";
+
+	private static final String UNIVERSITY_SERVICE_BY_FEIGN = "getAllCollegeFallbackByFeign";
 	
 	@Autowired
 	private ICollegeService iCollegeService;
@@ -47,18 +53,32 @@ public class CollegeController
 //	
 //	}
 	
-	@GetMapping("/getallcollege")
+	@GetMapping("/getallcollegebyresttemplate")
+	@CircuitBreaker(name=UNIVERSITY_SERVICE_BY_REST_TEMPLATE, fallbackMethod = "getAllCollegeFallbackByRestTemplate")
 	public ResponseEntity<List<College>> getUniversityAPI() 
 	{
 		List<College> list = iCollegeService.getUniversityAPI();
 		return new ResponseEntity<List<College>>(list, HttpStatus.OK);
 	}
 	
+	public ResponseEntity<String> getAllCollegeFallbackByRestTemplate(Exception e)
+	{
+		return new ResponseEntity<String>("University service down while fetching by rest template!!!", HttpStatus.OK);
+		
+	}
+	
 	@GetMapping("/allcollegebyfeign")
+	@CircuitBreaker(name=UNIVERSITY_SERVICE_BY_FEIGN, fallbackMethod = "getAllCollegeFallbackByFeign")
 	public ResponseEntity<List<College>> getCollegeByFeign()
 	{
 		List<College> allCollege = iCollegeService.getCollegeByFeign();
 		return new ResponseEntity<List<College>>(allCollege, HttpStatus.OK);
+	}
+	
+	public ResponseEntity<String> getAllCollegeFallbackByFeign(Exception e)
+	{
+		return new ResponseEntity<String>("University service down while fetching by feign client!!!", HttpStatus.OK);
+		
 	}
 
 }

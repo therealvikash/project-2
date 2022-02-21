@@ -55,7 +55,7 @@ class ConsultingAgencyApplicationTests
 	@MockBean
 	private IStudentFeignClient iStudentFeignClient;
 
-	//ObjectMapper om = new ObjectMapper();
+	
 
 	@Before
 	private void setUp()
